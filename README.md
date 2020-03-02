@@ -27,36 +27,40 @@ The files in this directory and how they're used:
 1. Create a TimescaleDB instance - [download](https://docs.timescale.com/latest/getting-started/installation) or [signup](https://www.timescale.com/cloud-signup)
 2. Create a database named `covid-19`
 
-``
+```
   psql
   create database "covid-19";
   \quit
-``
+```
+
 3. Run schema.sql 
 
    `psql -h <the.server.hostname> -f schema.sql covid-19`
-3. Install csvkit
+   
+4. Install csvkit
 
     Ubuntu: `sudo apt-get install csvkit`
 
-4. Using a text editor, replace the environment variables for `PGHOST`, `PGUSER` and `PGPASSWORD` in `covid-19_ingest.sh`
+5. Using a text editor, replace the environment variables for `PGHOST`, `PGUSER` and `PGPASSWORD` in `covid-19_ingest.sh`
 
-5. Run the script 
+6. Run the script 
 
    `bash covid-19_ingest.sh`
-6. (OPTIONAL) add shell script to crontab to run daily
 
-7. Be able to slice-and-dice the data using the full power of PostgreSQL along with Timescale's time-series capabilities!
+7. (OPTIONAL) add shell script to crontab to run daily
+
+8. Be able to slice-and-dice the data using the full power of PostgreSQL along with Timescale's time-series capabilities!
 
 ## Using the OpenRefine projects 
 1. Download [OpenRefine](https://openrefine.org/download.html).
 2. Run OpenRefine and import the projects in the `openrefine_projects` directory.
 3. Go to the COVID-19 directory and pull the latest data from JHU
 
-``
+```
   cd COVID-19
   git pull
-``
+```
+
 4. Use the latest JHU time-series data in the OpenRefine project and apply the recipes to normalize the data
 
 ## NOTES
