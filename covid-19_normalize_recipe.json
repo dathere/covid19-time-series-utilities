@@ -1,0 +1,88 @@
+[
+  {
+    "op": "core/transpose-columns-into-rows",
+    "startColumnName": "1/22/20",
+    "columnCount": -1,
+    "ignoreBlankCells": true,
+    "fillDown": true,
+    "separator": null,
+    "keyColumnName": "date_observation",
+    "valueColumnName": "count_observation",
+    "description": "Transpose cells in columns starting with 1/22/20 into rows in two new columns named date_observation and count_observation"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Province/State",
+    "newColumnName": "province_state",
+    "description": "Rename column Province/State to province_state"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Country/Region",
+    "newColumnName": "country_region",
+    "description": "Rename column Country/Region to country_region"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Lat",
+    "newColumnName": "latitude",
+    "description": "Rename column Lat to latitude"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Long",
+    "newColumnName": "longitude",
+    "description": "Rename column Long to longitude"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "record-based"
+    },
+    "baseColumnName": "province_state",
+    "expression": "grel:value.toString() + cells.country_region.value.toString()",
+    "onError": "set-to-blank",
+    "newColumnName": "loc_lookup",
+    "columnInsertIndex": 1,
+    "description": "Create column loc_lookup at index 1 based on column province_state using expression grel:value.toString() + cells.country_region.value.toString()"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "record-based"
+    },
+    "baseColumnName": "loc_lookup",
+    "expression": "grel:cell.cross(\"covid-19-locations\", \"loc_lookup\")[0].cells.loc_id.value",
+    "onError": "set-to-blank",
+    "newColumnName": "loc_id",
+    "columnInsertIndex": 2,
+    "description": "Create column loc_id at index 2 based on column loc_lookup using expression grel:cell.cross(\"covid-19-locations\", \"loc_lookup\")[0].cells.loc_id.value"
+  },
+  {
+    "op": "core/column-removal",
+    "columnName": "province_state",
+    "description": "Remove column province_state"
+  },
+  {
+    "op": "core/column-removal",
+    "columnName": "loc_lookup",
+    "description": "Remove column loc_lookup"
+  },
+  {
+    "op": "core/column-removal",
+    "columnName": "country_region",
+    "description": "Remove column country_region"
+  },
+  {
+    "op": "core/column-removal",
+    "columnName": "latitude",
+    "description": "Remove column latitude"
+  },
+  {
+    "op": "core/column-removal",
+    "columnName": "longitude",
+    "description": "Remove column longitude"
+  }
+]

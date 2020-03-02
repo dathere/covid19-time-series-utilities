@@ -1,0 +1,74 @@
+[
+  {
+    "op": "core/column-reorder",
+    "columnNames": [
+      "Province/State",
+      "Country/Region",
+      "Lat",
+      "Long"
+    ],
+    "description": "Reorder columns"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "record-based"
+    },
+    "baseColumnName": "Province/State",
+    "expression": "grel:row.index+1",
+    "onError": "set-to-blank",
+    "newColumnName": "loc_id",
+    "columnInsertIndex": 1,
+    "description": "Create column loc_id at index 1 based on column Province/State using expression grel:row.index+1"
+  },
+  {
+    "op": "core/column-move",
+    "columnName": "loc_id",
+    "index": 0,
+    "description": "Move column loc_id to position 0"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Province/State",
+    "newColumnName": "province_state",
+    "description": "Rename column Province/State to province_state"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Country/Region",
+    "newColumnName": "country_region",
+    "description": "Rename column Country/Region to country_region"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Lat",
+    "newColumnName": "latitude",
+    "description": "Rename column Lat to latitude"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Long",
+    "newColumnName": "longitude",
+    "description": "Rename column Long to longitude"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "record-based"
+    },
+    "baseColumnName": "province_state",
+    "expression": "grel:value.toString() + cells.country_region.value.toString()",
+    "onError": "set-to-blank",
+    "newColumnName": "loc_lookup",
+    "columnInsertIndex": 2,
+    "description": "Create column loc_lookup at index 2 based on column province_state using expression grel:value.toString() + cells.country_region.value.toString()"
+  },
+  {
+    "op": "core/column-move",
+    "columnName": "loc_lookup",
+    "index": 1,
+    "description": "Move column loc_lookup to position 1"
+  }
+]
