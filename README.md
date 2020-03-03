@@ -14,6 +14,11 @@ This repo contains several utilities for wrangling COVID-19 data from John Hopki
 * For OpenRefine projects
 	- [OpenRefine](http://openrefine.org)
 
+## Cloning
+A note on cloning this repo, since the COVID19 directory is a git submodule:
+
+* after cloning, you must initiate the submodule. In the top level directory for the project, run `git submodule init` and `git submodule update` to clone the JHU Repo as a submodule 
+
 ## Content
 The files in this directory and how they're used:
 
@@ -39,7 +44,8 @@ The files in this directory and how they're used:
    
 4. Install csvkit
 
-    Ubuntu: `sudo apt-get install csvkit`
+    - Ubuntu: `sudo apt-get install csvkit`
+    - MacOS: Using [homebrew](https://brew.sh/) run `brew install csvkit`
 
 5. Using a text editor, replace the environment variables for `PGHOST`, `PGUSER` and `PGPASSWORD` in `covid-19_ingest.sh`
 
