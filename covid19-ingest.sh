@@ -2,9 +2,9 @@
 # author: Joel Natividad, datHere.com
 
 FILES=COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/*.csv
-export PGUSER=postgres
+export PGUSER=covid19_user
 export PGPASSWORD=your-password-here
-export PGDATABASE=covid-19
+export PGDATABASE=covid_19
 export PGHOST=your-hostname-here
 export PGPORT=5432
 
@@ -41,7 +41,7 @@ do
 done
 
 echo -e -n "\nVacuuming/Analyzing database..."
-psql -q -c "VACUUM FULL ANALYZE;"
+psql -q -c "VACUUM FULL ANALYZE covid19_ts, import_covid19_ts;"
 psql -t -c "SELECT count(*) || ' rows' from covid19_ts;"
 
 end_time="$(date -u +%s)"

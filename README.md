@@ -30,17 +30,20 @@ The files in this directory and how they're used:
 
 ## Using the Timescale covid-19_ingest script
 1. Create a TimescaleDB instance - [download](https://docs.timescale.com/latest/getting-started/installation) or [signup](https://www.timescale.com/cloud-signup)
-2. Create a database named `covid-19`
+2. Create a database named `covid_19`, and an application user `covid_19_user`
 
 ```
   psql
-  create database "covid-19";
+  create database covid_19;
+  create user covid_19_user WITH PASSWORD 'your-password-here';
+  alter database covid_19 OWNER TO covid_19_user;
   \quit
 ```
 
-3. Run schema.sql 
+3. Run `schema.sql` as the `covid_19_user`. VACUUM/ANALYZE require owner privs 
 
-   `psql -h <the.server.hostname> -f schema.sql covid-19`
+   `psql -U covid_19_user -h <the.server.hostname> -f schema.sql covid_19`
+   
    
 4. Install csvkit
 
@@ -71,7 +74,7 @@ The files in this directory and how they're used:
 
 ## NOTES
  - the JHU COVID-19 repository is a git submodule. This was required to automate getting the latest data from their repo.
- - the script will only work in \*nix environment (Linux, Unix, MacOS?)
+ - the script will only work in \*nix environment (Linux, Unix, MacOS)
  - the script creates a hidden directory called `~/.covid-19` in your home directory where it stores the date of the last csv it processed in a file named `lastcsvprocessed`.  Delete that file to process all the files from the beginning, or change the date in the file to start processing files AFTER the entered date.  
  - if you need the normalized COVID-19 time-series data on another operating system, use the OpenRefine projects.  OpenRefine is cross-platform and has pre-built binaries for Windows, Mac and Linux.
 
