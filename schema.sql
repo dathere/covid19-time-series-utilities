@@ -1,6 +1,6 @@
 --CREATE DATABASE covid-19;
 
-\c covid-19
+\c covid_19
 
 CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
@@ -10,20 +10,14 @@ CREATE TABLE IF NOT EXISTS covid19_ts (
   observation_date TIMESTAMPTZ NOT NULL,
   confirmed INTEGER DEFAULT 0,
   deaths INTEGER DEFAULT 0,
-  recovered INTEGER DEFAULT 0,
-  PRIMARY KEY(province_state, country_region, observation_date)
-);
+  recovered INTEGER DEFAULT 0);
+
+CREATE TABLE IF NOT EXISTS import_covid19_ts (like covid19_ts);
+
+ALTER TABLE covid19_ts ADD
+  PRIMARY KEY(province_state, country_region, observation_date);
 
 SELECT create_hypertable('covid19_ts', 'observation_date');
-
-CREATE TABLE IF NOT EXISTS import_covid19_ts (
-  province_state TEXT,
-  country_region TEXT NOT NULL,
-  observation_date TIMESTAMPTZ NOT NULL,
-  confirmed INTEGER DEFAULT 0,
-  deaths INTEGER DEFAULT 0,
-  recovered INTEGER DEFAULT 0
-);
 
 -- Continuous Aggregates 
 -- we need to DROP VIEW CASCADE as there are underlying Timescale structures.
