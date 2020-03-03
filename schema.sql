@@ -19,6 +19,13 @@ ALTER TABLE covid19_ts ADD
 
 SELECT create_hypertable('covid19_ts', 'observation_date');
 
+CREATE TABLE IF NOT EXISTS covid19_locations (
+  province_state TEXT,
+  country_region TEXT NOT NULL,
+  latitude NUMERIC NOT NULL,
+  longitude NUMERIC NOT NULL,
+  PRIMARY KEY (province_state, country_region));
+
 -- Continuous Aggregates 
 -- we need to DROP VIEW CASCADE as there are underlying Timescale structures.
 -- CREATE OR REPLACE VIEW doesn't work with Timescale's continuous aggregates

@@ -40,8 +40,15 @@ do
   echo $csvname > ~/.covid-19/lastcsvprocessed
 done
 
+echo -e -n "\nCreating Locations table... "
+csvcut -x -c 1,2,7,8 /tmp/workfile_out.csv > /tmp/locations.csv
+psql -q -c "TRUNCATE TABLE covid19_locations;"
+psql  \
+    -c "\COPY covid19_locations(province_state,country_region,latitude,longitude) \
+    FROM '/tmp/locations.csv' DELIMITER ',' CSV HEADER FORCE NOT NULL province_state;"
+
 echo -e -n "\nVacuuming/Analyzing database..."
-psql -q -c "VACUUM FULL ANALYZE covid19_ts, import_covid19_ts;"
+psql -q -c "VACUUM FULL ANALYZE covid19_ts, import_covid19_ts, covid19_locations;"
 psql -t -c "SELECT count(*) || ' rows' from covid19_ts;"
 
 end_time="$(date -u +%s)"
