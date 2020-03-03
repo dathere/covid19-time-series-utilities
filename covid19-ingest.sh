@@ -14,9 +14,7 @@ mkdir -p ~/.covid-19
 lastcsvprocessed=$(<~/.covid-19/lastcsvprocessed)
 
 echo -e -n "Checking latest data from JHU... "
-cd COVID-19
-git pull
-cd ..
+git submodule update --remote 
 
 for f in $FILES
 do
