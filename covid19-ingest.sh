@@ -26,8 +26,8 @@ do
 
   echo -e -n "\nProcessing $csvname...\n  Checking CSV... "
   cp $f /tmp/workfile.csv
-  /usr/bin/csvclean -e UTF-8 /tmp/workfile.csv
-  /usr/bin/csvcut -x -c 1,2,3,4,5,6 /tmp/workfile_out.csv > /tmp/cleaned.csv
+  csvclean -e UTF-8 /tmp/workfile.csv
+  csvcut -x -c 1,2,3,4,5,6 /tmp/workfile_out.csv > /tmp/cleaned.csv
   psql -q -c "TRUNCATE TABLE import_covid19_ts;"
 
   echo -e -n "  Copying CSV... "
