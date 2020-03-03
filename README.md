@@ -63,12 +63,9 @@ The files in this directory and how they're used:
 ## Using the OpenRefine projects 
 1. Download [OpenRefine](https://openrefine.org/download.html).
 2. Run OpenRefine and import the projects in the `openrefine_projects` directory.
-3. Go to the COVID-19 directory and pull the latest data from JHU
+3. Pull the latest data from JHU
 
-```
-  cd COVID-19
-  git pull
-```
+  `git submodule update --remote` 
 
 4. Use the latest JHU time-series data in the OpenRefine project and apply the recipes to normalize the data
 
