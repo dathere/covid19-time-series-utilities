@@ -1,7 +1,6 @@
 #!/bin/bash 
 # author: Joel Natividad, datHere.com
 
-FILES=COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/*.csv
 export PGUSER=covid19_user
 export PGPASSWORD=your-password-here
 export PGDATABASE=covid_19
