@@ -1,0 +1,161 @@
+[
+  {
+    "op": "core/column-reorder",
+    "columnNames": [
+      "Province/State",
+      "Country/Region",
+      "Lat",
+      "Long"
+    ],
+    "description": "Reorder columns"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "record-based"
+    },
+    "baseColumnName": "Province/State",
+    "expression": "grel:row.index+1",
+    "onError": "set-to-blank",
+    "newColumnName": "loc_id",
+    "columnInsertIndex": 1,
+    "description": "Create column loc_id at index 1 based on column Province/State using expression grel:row.index+1"
+  },
+  {
+    "op": "core/column-move",
+    "columnName": "loc_id",
+    "index": 0,
+    "description": "Move column loc_id to position 0"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Province/State",
+    "newColumnName": "province_state",
+    "description": "Rename column Province/State to province_state"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Country/Region",
+    "newColumnName": "country_region",
+    "description": "Rename column Country/Region to country_region"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Lat",
+    "newColumnName": "latitude",
+    "description": "Rename column Lat to latitude"
+  },
+  {
+    "op": "core/column-rename",
+    "oldColumnName": "Long",
+    "newColumnName": "longitude",
+    "description": "Rename column Long to longitude"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "record-based"
+    },
+    "baseColumnName": "province_state",
+    "expression": "grel:value.toString() + cells.country_region.value.toString()",
+    "onError": "set-to-blank",
+    "newColumnName": "loc_lookup",
+    "columnInsertIndex": 2,
+    "description": "Create column loc_lookup at index 2 based on column province_state using expression grel:value.toString() + cells.country_region.value.toString()"
+  },
+  {
+    "op": "core/column-move",
+    "columnName": "loc_lookup",
+    "index": 1,
+    "description": "Move column loc_lookup to position 1"
+  },
+  {
+    "op": "core/column-addition-by-fetching-urls",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "longitude",
+    "urlExpression": "grel:\"https://api.geocode.earth/v1/reverse?api_key=GEOCODE_EARTH_API_KEY&layers=coarse&point.lat=\" + cells[\"latitude\"].value + \"&point.lon=\" + value",
+    "onError": "set-to-blank",
+    "newColumnName": "geocode-earthJSON",
+    "columnInsertIndex": 6,
+    "delay": 500,
+    "cacheResponses": true,
+    "httpHeadersJson": [
+      {
+        "name": "authorization",
+        "value": ""
+      },
+      {
+        "name": "user-agent",
+        "value": "OpenRefine 3.2 [55c921b]"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      }
+    ],
+    "description": "Create column geocode-earthJSON at index 6 by fetching URLs based on column longitude using expression grel:\"https://api.geocode.earth/v1/reverse?api_key=ge-8ccf2fb2db162431&layers=coarse&point.lat=\" + cells[\"latitude\"].value + \"&point.lon=\" + value"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "geocode-earthJSON",
+    "expression": "grel:value.parseJson()[\"features\"][0][\"properties\"][\"continent\"]",
+    "onError": "set-to-blank",
+    "newColumnName": "continent",
+    "columnInsertIndex": 7,
+    "description": "Create column continent at index 7 based on column geocode-earthJSON using expression grel:value.parseJson()[\"features\"][0][\"properties\"][\"continent\"]"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "geocode-earthJSON",
+    "expression": "grel:if(cells[\"country_region\"].value==\"US\",value.parseJson()[\"features\"][0][\"properties\"][\"county\"],\"\")",
+    "onError": "set-to-blank",
+    "newColumnName": "us_county",
+    "columnInsertIndex": 7,
+    "description": "Create column us_county at index 7 based on column geocode-earthJSON using expression grel:if(cells[\"country_region\"].value==\"US\",value.parseJson()[\"features\"][0][\"properties\"][\"county\"],\"\")"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "geocode-earthJSON",
+    "expression": "grel:if(cells[\"country_region\"].value==\"US\",value.parseJson()[\"features\"][0][\"properties\"][\"region\"],\"\")",
+    "onError": "set-to-blank",
+    "newColumnName": "us_state",
+    "columnInsertIndex": 7,
+    "description": "Create column us_state at index 7 based on column geocode-earthJSON using expression grel:if(cells[\"country_region\"].value==\"US\",value.parseJson()[\"features\"][0][\"properties\"][\"region\"],\"\")"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "geocode-earthJSON",
+    "expression": "grel:if(cells[\"country_region\"].value==\"US\",value.parseJson()[\"features\"][0][\"properties\"][\"locality\"],\"\")",
+    "onError": "set-to-blank",
+    "newColumnName": "us_locality",
+    "columnInsertIndex": 7,
+    "description": "Create column us_locality at index 7 based on column geocode-earthJSON using expression grel:if(cells[\"country_region\"].value==\"US\",value.parseJson()[\"features\"][0][\"properties\"][\"locality\"],\"\")"
+  },
+  {
+    "op": "core/column-move",
+    "columnName": "geocode-earthJSON",
+    "index": 10,
+    "description": "Move column geocode-earthJSON to position 10"
+  }
+]
