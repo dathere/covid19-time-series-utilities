@@ -31,6 +31,8 @@ if [[ $GEOCODE_EARTH_API_KEY == 'your-apikey-here' ]]; then
 fi
 
 echo ">>> Starting OpenRefine Automation!\n  Creating geocoded location lookup..."
+mkdir -p workdir/location-lookup/transform
+mkdir -p workdir/location-lookup/output
 sed "s/GEOCODE_EARTH_API_KEY/$GEOCODE_EARTH_API_KEY/" workdir/location-lookup/covid-19-locations-recipe.json > workdir/location-lookup/transform/lookup-recipe.json
 rm -rf workdir/location-lookup/output
 
@@ -39,6 +41,7 @@ rm -rf workdir/location-lookup/output
 echo ">>> Normalizing data..." 
 rm -rf workdir/normalize/output
 mkdir -p workdir/normalize/output
+mkdir -p workdir/normalize/input
 cp ../COVID-19/csse_covid_19_data/csse_covid_19_time_series/*.csv workdir/normalize/input
 ./openrefine-batch.sh -a workdir/normalize/input -b workdir/normalize/transform/ -c workdir/normalize/output/ -e csv -f csv -m 4096M -X -R -d workdir/location-lookup/output/ 
 
