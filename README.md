@@ -28,7 +28,7 @@ The files in this directory and how they're used:
 * `schema.sql`: Data definition (DDL) to create the necessary tables & hypertables.
 * `covid-refine`: OpenRefine automation to create fully normalized COVID-19 time-series data, with expanded geographic features 
 
-## Using the Timescale covid-19_ingest script
+## Using the Timescale covid19-ingest script
 1. Create a TimescaleDB instance - [download](https://docs.timescale.com/latest/getting-started/installation) or [signup](https://www.timescale.com/cloud-signup)
 2. Create a database named `covid_19`, and an application user `covid_19_user`
 
