@@ -1,4 +1,4 @@
-# COVID19-refine.sh
+# covid19-refine.sh
 This script automates the creation/population of a fully normalized, non-sparse, geocoded enriched, time-series
 
 0. Be sure to run `schema.sql` as noted in the main README.
