@@ -1,5 +1,5 @@
 # covid19-refine.sh
-This script automates the creation/population of a fully normalized, non-sparse, geocoded enriched, time-series
+This script automates the creation/population of a fully normalized, non-sparse, geo-enriched version of [JHU's COVID-19 time-series data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series).
 
 0. Be sure to run `schema.sql` as noted in the main README.
 
@@ -14,10 +14,10 @@ This script automates the creation/population of a fully normalized, non-sparse,
 ` ./covid19-refine.sh`
 
 
-4. Slice and dice the data using Postgres/Timescale! Note these hypertables/continuous aggregates:
+4. Slice and dice the data using Postgres/Timescale! Note these tables/hypertables/continuous aggregates:
 
   - `covid19_loclookup`
-     we assign a `loc_id` to help with joins.  We also enrich the data with continent, and for the US - locality, county and state for additional aggregrations.
+     we assign a `loc_id` to help with joins.  We also enrich the data with continent, and for the US - locality, county and state for additional aggregrations ([sample](workdir/location-lookup/location-lookup.csv)).
 
 ```SQL
 		CREATE TABLE IF NOT EXISTS covid19_loclookup (
@@ -32,9 +32,6 @@ This script automates the creation/population of a fully normalized, non-sparse,
 		  continent TEXT,
 		  geocode_earth_json JSONB);
 ```
-
-
-     A version of the generated file is [here](workdir/location-lookup/location-lookup.csv).
 
   - `covid19_normalized_ts`
   	apart from the running totals compiled by JHU, we also compute the daily incidents for any specific date/location (e.g. how many confirmed, deaths, recoveries for each day/location).  This will allow you to do aggregations for arbitrary date ranges, compute rates of confirmed/deaths/recoveries, and benchmarking across locations.
