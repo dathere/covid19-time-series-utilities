@@ -11,8 +11,10 @@ This repo contains several utilities for wrangling COVID-19 data from John Hopki
   - [csvkit](https://csvkit.readthedocs.io/en/latest/)
   - [git](https://git-scm.com/)
   - Unix/Linux operating system with bash 
-* For OpenRefine projects
-	- [OpenRefine](http://openrefine.org)
+* OpenRefine time-series automation
+	- [OpenRefine](http://openrefine.org) - installed automatically
+  - [openrefine-batch](https://github.com/opencultureconsulting/openrefine-batch) - included
+  - a [Geocode.earth](https://geocode.earth) API key - [install](https://github.com/pelias/pelias) or [free trial](https://geocode.earth/invite/request?referrer=datHere). Used to enrich geographic data.
 
 ## Cloning
 A note on cloning this repo, since the COVID19 directory is a git submodule:
@@ -24,9 +26,7 @@ The files in this directory and how they're used:
 
 * `covid-19_ingest.sh`: Bash script to read daily-report data from [JHU COVID-19 Github](https://github.com/CSSEGISandData/COVID-19), and upsert the data into TimescaleDB.
 * `schema.sql`: Data definition (DDL) to create the necessary tables & hypertables.
-* `covid-19_locations_recipe.json`: OpenRefine recipe to create a locations lookup table.
-* `covid-19_normalize_recipe.json`: OpenRefine recipe to normalize the time-series data - "unpivot" the data, normalize location using location lookup 
-* `openrefine_projects`: OpenRefine project exports
+* `covid-refine`: OpenRefine automation to create fully normalized COVID-19 time-series data, with expanded geographic features 
 
 ## Using the Timescale covid-19_ingest script
 1. Create a TimescaleDB instance - [download](https://docs.timescale.com/latest/getting-started/installation) or [signup](https://www.timescale.com/cloud-signup)
@@ -60,17 +60,8 @@ The files in this directory and how they're used:
 
 8. Be able to slice-and-dice the data using the full power of PostgreSQL along with Timescale's time-series capabilities!
 
-## Using the OpenRefine projects 
-1. Download [OpenRefine](https://openrefine.org/download.html).
-2. Run OpenRefine and import the projects in the `openrefine_projects` directory.
-3. Go to the COVID-19 directory and pull the latest data from JHU
-
-```
-  cd COVID-19
-  git pull
-```
-
-4. Use the latest JHU time-series data in the OpenRefine project and apply the recipes to normalize the data
+## Using the COVIDrefine 
+See the detailed [README](covid19-refine/README.md).
 
 ## NOTES
  - the JHU COVID-19 repository is a git submodule. This was required to automate getting the latest data from their repo.
@@ -80,11 +71,15 @@ The files in this directory and how they're used:
 
 ## TODO
  - add postgis to schema for spatial analysis
- - automate OpenRefine projects to insert data into Timescale using [openrefine-client](https://github.com/opencultureconsulting/openrefine-client#download)
  - use [postgREST](http://postgrest.org) to add a REST API in front of TimescaleDB database
  - create a Grafana dashboard
  - create a Carto visualization
  - create a Superset visualization
+
+ ## ACKNOWLEDGEMENTS
+  - thanks to Avtar Sewrathan (@avthars), Prashant Sridharan (@CoolAssPuppy) and Mike Freedman (@mfreed) at [Timescale](https://timescale.com) for their help & support to implement this project from idea to implementation in 5 days!
+  - thanks to Julian Simioni (@orangejulius) at [Geocode.earth](https://geocode.earth) for allowing us to use the Geocode.earth API!
+
 
 Shield: [![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 

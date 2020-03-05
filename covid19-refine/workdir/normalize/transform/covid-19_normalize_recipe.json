@@ -54,7 +54,7 @@
       "mode": "record-based"
     },
     "baseColumnName": "loc_lookup",
-    "expression": "grel:cell.cross(\"covid-19-locations\", \"loc_lookup\")[0].cells.loc_id.value",
+    "expression": "grel:cell.cross(\"location-lookup\", \"loc_lookup\")[0].cells.loc_id.value",
     "onError": "set-to-blank",
     "newColumnName": "loc_id",
     "columnInsertIndex": 2,
