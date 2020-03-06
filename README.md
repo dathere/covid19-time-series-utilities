@@ -72,7 +72,7 @@ See the detailed [README](covid19-refine/).
  - create a Superset visualization
 
  ## ACKNOWLEDGEMENTS
-  - thanks to Avtar Sewrathan (@avthars), Prashant Sridharan (@CoolAssPuppy) and Mike Freedman (@mfreed) at [Timescale](https://timescale.com) for their help & support to implement this project from idea to implementation in 5 days!
+  - thanks to Avtar Sewrathan (@avthars), Prashant Sridharan (@CoolAssPuppy) and Mike Freedman (@michaelfreedman) at [Timescale](https://timescale.com) for their help & support to implement this project from idea to implementation in 5 days!
   - thanks to Julian Simioni (@orangejulius) at [Geocode.earth](https://geocode.earth) for allowing us to use the Geocode.earth API!
 
 
