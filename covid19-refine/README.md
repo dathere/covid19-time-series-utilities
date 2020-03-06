@@ -1,13 +1,13 @@
 # covid19-refine.sh
 This script automates the creation/population of a fully normalized, non-sparse, geo-enriched version of [JHU's COVID-19 time-series data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series).
 
-0. Be sure to run `schema.sql` as noted in the main README.
+0. Be sure to follow steps 1 through 4 of the main [README](/README.md#using-the-timescale-covid19-ingest-script).
 
-1. Run `openrefine-batch.sh` to initialize the environment.  It will automatically download OpenRefine and openrefine-client. You need to do this only once, and you'll only need to run `covid19-refine.sh` for future invocations.
+1. Run `openrefine-batch.sh` to initialize the environment.  It will automatically download OpenRefine and openrefine-client. You need to do this only once.
 
 ` ./openrefine-batch.sh`
 
-2. Modify the `covid19-refine.sh` file to add your Postgres connection parameters, and the Geocode.earth API key.
+2. Modify the `covid19-refine.sh` file to add your Postgres connection parameters, and your Geocode.earth API key.
 
 3. Run `covid19-refine.sh`.  It will automate several OpenRefine projects to normalize and enrich the latest [JHU's time-series data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series) and insert it into Timescale.  It will be a relatively long-running automation (6 minutes) as it will run OpenRefine in headless mode, and geographically enrich the location data to support filtering on additional facets (continent, for the US - locality, county, state).
 
@@ -17,7 +17,7 @@ This script automates the creation/population of a fully normalized, non-sparse,
 4. Slice and dice the data using Postgres/Timescale! Note these tables/hypertables/continuous aggregates:
 
   - `covid19_loclookup`
-     we assign a `loc_id` to help with joins.  We also enrich the data with continent, and for the US - locality, county and state for additional aggregrations ([sample](workdir/location-lookup/location-lookup.csv)).
+     we assign a `loc_id` to help with joins.  We also geocode the data, adding `continent`; and for the US - `locality`, `county` and `state` for additional aggregrations ([sample](workdir/location-lookup/location-lookup.csv)).
 
 ```SQL
 		CREATE TABLE IF NOT EXISTS covid19_loclookup (
@@ -30,11 +30,12 @@ This script automates the creation/population of a fully normalized, non-sparse,
 		  us_state TEXT,
 		  us_county TEXT,
 		  continent TEXT,
+		  location_geom geometry(POINT, 2163),
 		  geocode_earth_json JSONB);
 ```
 
   - `covid19_normalized_ts`
-  	apart from the running totals compiled by JHU, we also compute the daily incidents for any specific date/location (e.g. how many confirmed, deaths, recoveries for each day/location).  This will allow you to do aggregations for arbitrary date ranges, compute rates of confirmed/deaths/recoveries, and benchmarking across locations.
+  	from the running totals compiled by JHU, we also derive the daily incidents for any specific date/location (e.g. how many confirmed, deaths, recoveries for each day/location).  This will allow you to do aggregations for arbitrary date ranges, compute rates of confirmed/deaths/recoveries, and do benchmarking across locations.
 
 ```SQL
 		CREATE TABLE IF NOT EXISTS covid19_normalized_ts (
@@ -53,7 +54,7 @@ This script automates the creation/population of a fully normalized, non-sparse,
 
 ```SQL
 		CREATE VIEW confirmed_3days
-		WITH (timescaledb.continuous)
+		WITH (timescaledb.continuous, timescaledb.refresh_lag = '-6 days')
 		AS
 		SELECT
 		  loc_id,
@@ -68,7 +69,7 @@ This script automates the creation/population of a fully normalized, non-sparse,
 		GROUP BY loc_id, bucket;
 
 		CREATE VIEW confirmed_weekly
-		WITH (timescaledb.continuous)
+		WITH (timescaledb.continuous, timescaledb.refresh_lag = '-14 days')
 		AS
 		SELECT
 		  loc_id,

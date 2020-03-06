@@ -20,6 +20,7 @@ if [ -f ~/.covid-19/covidrefinelastrun ]; then
   if [[ $last_modified < $covidrefinelastrun ]]; then
     echo "ABORTED. JHU's COVID-19 data has not been modified since the last run."
     echo -e "JHU data last modified: $last_modified\nLast Run: $covidrefinelastrun"
+    echo -e "HINT: Delete or modify ~/.covid-19/covidrefinelastrun"
     exit
   fi
 fi
@@ -52,6 +53,8 @@ csvcut -x \
 psql -c \
     "\COPY covid19_loclookup(loc_id,province_state,country_region,latitude,longitude,us_locality,us_state,us_county,continent,geocode_earth_json) \
       FROM 'workdir/location-lookup/location-lookup.csv' DELIMITER ',' CSV HEADER ;"
+psql -c "UPDATE covid19_loclookup
+    SET location_geom = ST_Transform(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326), 2163);"
 
 echo -e -n "  Populating deaths table..."
 psql -q -c "TRUNCATE TABLE import_covid19_deaths;"
@@ -72,7 +75,7 @@ psql  -c \
       FROM 'workdir/normalize/output/time_series_19-covid-Recovered.csv' DELIMITER ',' CSV HEADER;"
 
 echo -e "  Collating normalized data... "
-psql -q -c "TRUNCATE TABLE covid19_normalized_ts;"
+psql -q -t -c "SELECT drop_chunks(NOW() + interval '1 year', 'covid19_normalized_ts', cascade_to_materializations=>true);"
 psql -q -c "INSERT INTO covid19_normalized_ts \
       SELECT a.loc_id, a.observation_date, a.observation_count as confirmed_total, \
         b.observation_count as deaths_total, c.observation_count as recovered_total, 0, 0, 0 \
@@ -86,6 +89,12 @@ psql -q -t -o /dev/null -c "select derive_daily_counts();"
 
 echo -e -n "\nVacuuming/Analyzing database...\n"
 psql -q -c "VACUUM FULL ANALYZE covid19_normalized_ts, covid19_loclookup;"
+psql -q -c "REFRESH MATERIALIZED VIEW confirmed_3days;"
+psql -q -c "REFRESH MATERIALIZED VIEW deaths_3days;"
+psql -q -c "REFRESH MATERIALIZED VIEW recovered_3days;"
+psql -q -c "REFRESH MATERIALIZED VIEW confirmed_weekly;"
+psql -q -c "REFRESH MATERIALIZED VIEW deaths_weekly;"
+psql -q -c "REFRESH MATERIALIZED VIEW recovered_weekly;"
 psql -t -c "SELECT count(*) || ' rows' FROM covid19_normalized_ts;"
 psql -t -c "SELECT count(*) || ' locations' FROM covid19_loclookup;"
 

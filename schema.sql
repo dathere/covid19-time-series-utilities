@@ -3,6 +3,7 @@
 \c covid_19
 
 CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE TABLE IF NOT EXISTS covid19_ts (
   province_state TEXT,
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS covid19_locations (
   country_region TEXT NOT NULL,
   latitude NUMERIC NOT NULL,
   longitude NUMERIC NOT NULL,
+  location_geom geometry(POINT, 2163),
   PRIMARY KEY (province_state, country_region));
 
 -- OpenRefine tables
@@ -38,6 +40,7 @@ CREATE TABLE IF NOT EXISTS covid19_loclookup (
   us_state TEXT,
   us_county TEXT,
   continent TEXT,
+  location_geom geometry(POINT, 2163),
   geocode_earth_json JSONB);
 ALTER TABLE covid19_loclookup OWNER TO covid19_user;
 CREATE INDEX IF NOT EXISTS geocode_earth_json_idx ON covid19_loclookup USING GIN (geocode_earth_json);
@@ -76,9 +79,30 @@ select create_hypertable('covid19_normalized_ts', 'observation_date');
 -- we need to DROP VIEW CASCADE as there are underlying Timescale structures.
 -- CREATE OR REPLACE VIEW doesn't work with Timescale's continuous aggregates
 
+DROP VIEW IF EXISTS daily_change CASCADE;
+CREATE VIEW daily_change
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-2 days')
+AS
+SELECT
+  country_region,
+  province_state,
+  time_bucket('2 days', observation_date) as bucket,
+  first(confirmed, observation_date) as confirmed_yesterday,
+  last(confirmed, observation_date) as confirmed_today,
+  last(confirmed, observation_date) - first(confirmed, observation_date) as confirmed_change,
+  first(deaths, observation_date) as deaths_yesterday,
+  last(deaths, observation_date) as deaths_today,
+  last(deaths, observation_date) - first(deaths, observation_date) as deaths_change,
+  first(recovered, observation_date) as recovered_yesterday,
+  last(recovered, observation_date) as recovered_today,
+  last(recovered, observation_date) - first(recovered, observation_date) as recovered_change
+FROM
+  covid19_ts
+GROUP BY country_region, province_state, bucket;
+
 DROP VIEW IF EXISTS confirmed_3days CASCADE;
 CREATE VIEW confirmed_3days
-WITH (timescaledb.continuous)
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-6 days')
 AS
 SELECT
   loc_id,
@@ -94,7 +118,7 @@ GROUP BY loc_id, bucket;
 
 DROP VIEW IF EXISTS deaths_3days CASCADE;
 CREATE VIEW deaths_3days
-WITH (timescaledb.continuous)
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-6 days')
 AS
 SELECT
   loc_id,
@@ -110,7 +134,7 @@ GROUP BY loc_id, bucket;
 
 DROP VIEW IF EXISTS recovered_3days CASCADE;
 CREATE VIEW recovered_3days
-WITH (timescaledb.continuous)
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-6 days')
 AS
 SELECT
   loc_id,
@@ -126,7 +150,7 @@ GROUP BY loc_id, bucket;
 
 DROP VIEW IF EXISTS confirmed_3days CASCADE;
 CREATE VIEW confirmed_3days
-WITH (timescaledb.continuous)
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-6 days')
 AS
 SELECT
   loc_id,
@@ -142,7 +166,7 @@ GROUP BY loc_id, bucket;
 
 DROP VIEW IF EXISTS confirmed_weekly CASCADE;
 CREATE VIEW confirmed_weekly
-WITH (timescaledb.continuous)
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-14 days')
 AS
 SELECT
   loc_id,
@@ -158,7 +182,7 @@ GROUP BY loc_id, bucket;
 
 DROP VIEW IF EXISTS deaths_weekly CASCADE;
 CREATE VIEW deaths_weekly
-WITH (timescaledb.continuous)
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-14 days')
 AS
 SELECT
   loc_id,
@@ -174,7 +198,7 @@ GROUP BY loc_id, bucket;
 
 DROP VIEW  IF EXISTS recovered_weekly CASCADE;
 CREATE VIEW recovered_weekly
-WITH (timescaledb.continuous)
+WITH (timescaledb.continuous, timescaledb.refresh_lag = '-14 days')
 AS
 SELECT
   loc_id,

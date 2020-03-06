@@ -47,8 +47,12 @@ psql  \
     -c "\COPY covid19_locations(province_state,country_region,latitude,longitude) \
     FROM '/tmp/locations.csv' DELIMITER ',' CSV HEADER FORCE NOT NULL province_state;"
 
+psql -c "UPDATE covid19_locations
+    SET location_geom = ST_Transform(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326), 2163);"
+
 echo -e -n "\nVacuuming/Analyzing database..."
 psql -q -c "VACUUM FULL ANALYZE covid19_ts, import_covid19_ts, covid19_locations;"
+psql -q -c "REFRESH MATERIALIZED VIEW daily_change;"
 psql -t -c "SELECT count(*) || ' rows' from covid19_ts;"
 
 end_time="$(date -u +%s)"
