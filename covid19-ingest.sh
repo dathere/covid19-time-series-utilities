@@ -2,11 +2,25 @@
 # author: Joel Natividad, datHere.com
 
 FILES=COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/*.csv
-export PGUSER=covid19_user
-export PGPASSWORD=your-password-here
-export PGDATABASE=covid_19
-export PGHOST=your-hostname-here
-export PGPORT=5432
+if [[ -z "${PGUSER}" ]]; then
+  export PGUSER=covid19_user
+fi
+
+if [[ -z "${PGPASSWORD}" ]]; then
+  export PGPASSWORD=your-password-here
+fi
+
+if [[ -z "${PGDATABASE}" ]]; then
+  export PGDATABASE=covid_19
+fi
+
+if [[ -z "${PGHOST}" ]]; then
+  export PGHOST=your-hostname-here
+fi
+
+if [[ -z "${PGPORT}" ]]; then
+  export PGPORT=5432
+fi
 
 start_time="$(date -u +%s)"
 
@@ -14,7 +28,7 @@ mkdir -p ~/.covid-19
 lastcsvprocessed=$(<~/.covid-19/lastcsvprocessed)
 
 echo -e -n "Checking latest data from JHU... "
-git submodule update --remote 
+git submodule update --remote
 
 for f in $FILES
 do
