@@ -1,0 +1,46 @@
+version: '3.1'
+
+volumes:
+  covid_timescaledb_postgres_data: {}
+
+services:
+  covid_postgres:
+    build:
+      context: .
+      dockerfile: ./compose/postgres/Dockerfile
+    env_file: environment
+    volumes:
+      - covid_timescaledb_postgres_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+
+  covid_data:
+    build:
+      context: .
+      dockerfile: ./compose/data/Dockerfile
+    env_file: environment
+    command: /usr/local/covid19-ingest.sh
+    volumes:
+      - ./:/usr/local
+    depends_on:
+      - covid_postgres
+
+  covid_postgrest:
+    image: postgrest/postgrest
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://covid19_user:covid_19@covid_postgres:5432/covid_19
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: covid19_user
+    depends_on:
+      - covid_postgres
+
+  covid_swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      API_URL: http://localhost:3000/

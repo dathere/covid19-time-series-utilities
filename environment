@@ -1,0 +1,13 @@
+POSTGRES_DB=covid_19
+POSTGRES_PASSWORD=covid_19
+POSTGRES_USER=covid19_user
+
+PGHOST=covid_postgres
+
+PGUSER=covid19_user
+PGPASSWORD=covid_19
+PGDATABASE=covid_19
+PGHOST=covid_postgres
+PGPORT=5432
+
+PGDATA=/var/lib/postgresql/data/pgdata
