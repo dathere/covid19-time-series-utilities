@@ -22,7 +22,7 @@ A note on cloning this repo, since the COVID19 directory is a git submodule:
 The files in this directory and how they're used:
 
 * `covid-19_ingest.sh`: script that converts the JHU COVID-19 [daily-report data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports) to a time-series database using TimescaleDB.
-* `covid-refine`:   OpenRefine automation script that converts JHU COVID-19 [time-series data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series) into a normalized, enriched format and uploads it to TimescaleDB. 
+* `covid-refine`:   OpenRefine automation script that converts JHU COVID-19 [time-series data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series) into a normalized, enriched format and uploads it to TimescaleDB. (__RECOMMENDED__)
 * `schema.sql`: Data definition (DDL) to create the necessary tables & hypertables.
 * `environment`: Default environment values used in Docker containers.
 
@@ -59,6 +59,8 @@ The files in this directory and how they're used:
 8. Be able to slice-and-dice the data using the full power of PostgreSQL along with Timescale's time-series capabilities!
 
 ## Using COVIDrefine 
+__NOTE:__ Due to the changing file format of JHU's daily report data, covid-refine is recommended over `covid-19_ingest.sh`. 
+COVIDrefine has the added benefit of producing fully normalized, non-sparse, geo-enriched data. 
 See the detailed [README](covid19-refine/).
 
 ## Using docker-compose
