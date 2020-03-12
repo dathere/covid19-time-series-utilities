@@ -61,7 +61,10 @@ The files in this directory and how they're used:
 ## Using COVIDrefine 
 __NOTE:__ Due to the changing file format of JHU's daily report data, covid-refine is recommended over `covid-19_ingest.sh`. 
 COVIDrefine has the added benefit of producing fully normalized, non-sparse, geo-enriched data. 
+
 See the detailed [README](covid19-refine/).
+
+If you just want to download the COVIDrefine data, the latest version can be found [here](https://data.beta.nyc/dataset/covid-19-time-series).
 
 ## Using docker-compose
 1. Remember initiate the submodule, run `git submodule init`
