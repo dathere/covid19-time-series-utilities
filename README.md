@@ -28,19 +28,19 @@ The files in this directory and how they're used:
 
 ## Using the Timescale covid19-ingest script
 1. Create a TimescaleDB instance - [download](https://docs.timescale.com/latest/getting-started/installation) or [signup](https://www.timescale.com/cloud-signup)
-2. Create a database named `covid_19`, and an application user `covid_19_user`
+2. Create a database named `covid_19`, and an application user `covid19_user`
 
 ```
   psql
   create database covid_19;
-  create user covid_19_user WITH PASSWORD 'your-password-here';
-  alter database covid_19 OWNER TO covid_19_user;
+  create user covid19_user WITH PASSWORD 'your-password-here';
+  alter database covid_19 OWNER TO covid19_user;
   \quit
 ```
 
-3. Run `schema.sql` as the `covid_19_user`. VACUUM/ANALYZE require owner privs 
+3. Run `schema.sql` as the `covid19_user`. VACUUM/ANALYZE require owner privs 
 
-   `psql -U covid_19_user -h <the.server.hostname> -f schema.sql covid_19`
+   `psql -U covid19_user -h <the.server.hostname> -f schema.sql covid_19`
    
    
 4. Install csvkit
