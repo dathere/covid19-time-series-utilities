@@ -2,6 +2,8 @@
 
 This repo contains several utilities for wrangling COVID-19 data from the [John Hopkins University COVID-19 repository](https://github.com/CSSEGISandData/COVID-19). 
 
+NOTE: The utilities currently do not work because of the new file formats.  They will be updated shortly to work with the revised formats.
+
 ## Requirements
 * A working instance of [TimescaleDB](https://docs.timescale.com) in PostgreSQL v10+
 * [csvkit](https://csvkit.readthedocs.io/en/latest/)
